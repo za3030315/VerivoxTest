@@ -7,36 +7,33 @@ namespace Verivox.BusinessLogic.Tariffs
     {
         public string Name => "Packaged Tariff";
 
-        public decimal YearlyCost => _consumption <= _minimumConsumption
-                                         ? _basePrice
-                                         : _basePrice + (_consumption - _minimumConsumption) * _kilowattPrice;
+        public decimal YearlyCost { get; }
 
-        private decimal _consumption;
+        private readonly decimal _consumption;
         private readonly decimal _minimumConsumption;
         private readonly decimal _basePrice;
         private readonly decimal _kilowattPrice;
 
         public PackagedTariff(decimal consumption = 0, decimal minimumConsumption = 4000m, decimal basePrice = 800m, decimal kilowattPrice = 0.3m)
         {
-            if (consumption < 0 || minimumConsumption < 0 || basePrice < 0 || kilowattPrice < 0)
-            {
-                throw new ArgumentException();
-            }
+            if (consumption < 0) { throw new ArgumentException("consumption should be higher than 0"); }
+            if (minimumConsumption < 0) { throw new ArgumentException("minimumConsumption should be higher than 0"); }
+            if (basePrice < 0) { throw new ArgumentException("basePrice should be higher than 0"); }
+            if (kilowattPrice < 0) { throw new ArgumentException("kilowattPrice should be higher than 0"); }
 
             _consumption = consumption;
             _minimumConsumption = minimumConsumption;
             _basePrice = basePrice;
             _kilowattPrice = kilowattPrice;
+
+            YearlyCost = CalculateYearlyCost();
         }
 
-        public void SetConsumption(decimal consumption)
+        private decimal CalculateYearlyCost()
         {
-            if (consumption < 0)
-            {
-                throw new ArgumentException();
-            }
-
-            _consumption = consumption;
-        }      
+            return _consumption <= _minimumConsumption
+                       ? _basePrice
+                       : _basePrice + (_consumption - _minimumConsumption) * _kilowattPrice;
+        }
     }
 }

@@ -4,6 +4,5 @@
     {
         string Name { get; }
         decimal YearlyCost { get; }
-        void SetConsumption(decimal consumption);
     }
 }
